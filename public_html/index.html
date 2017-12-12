@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <!--App CSS-->
         <link href="css/css.css" rel="stylesheet" type="text/css"/>
-
+        
         <!--Angular-->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>   
         <!--Angular Animate-->
@@ -58,19 +58,22 @@
                 <div class="collapse navbar-collapse text-right" id="myNavbar">
                     <ul class="nav navbar-nav">
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="following.html">Following</a></li>
+                        <li ng-show="authUser"><a href="following.html">Following</a></li>
                         <li><a href="top-posts.html">Top Posts</a></li>
-                        <li><a href="profile.html">Profile</a></li> 
+                        <li ng-show="authUser"><a href="profile.html">Profile</a></li> 
+                        <li ng-show="!authUser"><a href="login-signup.html">Log in / Sign up</a></li> 
                     </ul>
                 </div>
             </div>
         </nav>
         <!--End Navbar--> 
-
         <div class="container-fluid">
             <h2>
-                Stuff
+                Home
             </h2>
+            <div ng-controller="homeCtrl">
+                
+            </div>             
         </div>
     </body>
 </html>
