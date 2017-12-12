@@ -1,1 +1,33 @@
 /*Chris Gonzalez 2017*/
+nav.navbar-inverse {
+    background-color: #009956;
+    border: #45A649;
+}
+a.navbar-brand {
+    font-size: 1.8em;
+    color: black !important;
+}
+.navbar-inverse .navbar-nav>li>a{
+    font-size: 1.2em;
+    color: #424B54;
+}
+
+nav div{
+    padding: 1px;
+    background-color: #BAD4AA;
+}
+
+/*center navbar elements*/
+
+.navbar .navbar-nav {
+    display: inline-block;
+    float: none;
+}
+.navbar .navbar-collapse {
+    text-align: center;
+}
+
+body{
+    background-color: #f3f4f1;
+    font-family: 'Montserrat', sans-serif;
+}
