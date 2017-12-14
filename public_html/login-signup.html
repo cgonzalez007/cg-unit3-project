@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <!--App CSS-->
         <link href="css/css.css" rel="stylesheet" type="text/css"/>
-        
+
         <!--Angular-->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>   
         <!--Angular Animate-->
@@ -62,6 +62,7 @@
                         <li><a href="top-posts.html">Top Posts</a></li>
                         <li ng-show="authUser"><a href="profile.html">Profile</a></li> 
                         <li ng-show="!authUser"><a href="login-signup.html">Log in / Sign up</a></li> 
+                        <li ng-show="authUser"><a href="#">Log out</a></li> 
                     </ul>
                 </div>
             </div>
@@ -71,9 +72,75 @@
             <h2>
                 Log in / Sign up
             </h2>
-            <div ng-controller="authCtrl">
-                
+            <br>
+            <div ng-show="!authCtrl" ng-controller="authCtrl">
+                <div id="login" class="col-sm-6 col-md-6 col-xs-12">
+                    <h3>
+                        Already have an account? Log in here!
+                    </h3>
+                    <form id="login-form">
+                        <div class="form-group col-md-7">                           
+                            <label for="login-email" class="h4">
+                                Email
+                            </label>
+                            <input type="email" class="form-control" id="login-email" name="login-email" value="" placeholder="email" required="required">
+                        </div>
+                        <div class="form-group col-md-7">
+                            <label for="login-password" class="h4">
+                                Password
+                            </label>
+                            <input type="password" class="form-control" id="login-password" name="login-password" value="" placeholder="password" required="required">
+                        </div>
+                        <div class="col-md-7">
+                            <button type="button" class="btn btn-default" id="login-btn">
+                                Log in
+                            </button>
+                        </div>                        
+                    </form>
+                </div>
+                <div id="signup" class="col-sm-6 col-md-6 col-xs-12">
+                    <h3>
+                        Want to be a part of our community? Sign up here!                        
+                    </h3>
+                    <form id="signup-form">
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label for="first-name" class="h4">
+                                First Name
+                            </label>
+                            <input type="text" class="form-control" id="first-name" name="first-name" value="" placeholder="first name" required="required">
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label for="last-name" class="h4">
+                                Last Name
+                            </label>
+                            <input type="text" class="form-control" id="last-name" name="last-name" value="" placeholder="last name" required="required">
+                        </div>
+                        <div class="form-group col-md-7"> 
+                            <label for="signup-email" class="h4">
+                                Email
+                            </label>
+                            <input type="text" class="form-control" id="signup-email" name="signup-email" value="" placeholder="email" required="required">
+                        </div>
+                        <div class="form-group col-md-7"> 
+                            <label for="signup-password" class="h4">
+                                Password
+                            </label>
+                            <input type="password" class="form-control" id="signup-password" name="signup-password" value="" placeholder="password" required="required">
+                        </div> 
+                        <div class="col-md-7">
+                            <button type="button" class="btn btn-default" id="signup-btn">
+                                Sign up
+                            </button> 
+                        </div>    
+
+                    </form>
+                </div>
+            </div>
+            <div ng-show="authUser" ng-controller="authCtrl">
+                Oops, it looks like you may have landed on this page on 
+                accident. 
             </div>
         </div>
+        <br>
     </body>
 </html>
