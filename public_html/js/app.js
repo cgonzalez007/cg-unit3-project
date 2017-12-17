@@ -14,9 +14,6 @@ app.controller("followingCtrl", function ($scope, $firebaseAuth, $firebaseObject
     app.initFirebase();
 });
 
-app.controller("topPostsCtrl", function ($scope, $firebaseAuth, $firebaseObject) {
-    app.initFirebase();
-});
 
 app.controller("topPostsCtrl", function ($scope, $firebaseAuth, $firebaseObject) {
     app.initFirebase();
@@ -26,9 +23,15 @@ app.controller("profileCtrl", function ($scope, $firebaseAuth, $firebaseObject) 
     app.initFirebase();
 });
 
+
 app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject) {
     //initialize firebase
     app.initFirebase();
+    
+    $scope.toggleLoginSignup = function(){
+        $scope.signup = $scope.signup ? false : true;
+        $scope.login = $scope.login ? false : true;
+    };
     
     //create auth obj
     $scope.authObj = $firebaseAuth();

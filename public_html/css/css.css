@@ -1,4 +1,8 @@
 /*Chris Gonzalez 2017*/
+footer{
+    text-align: center;
+}
+
 nav.navbar-inverse {
     background-color: #009956;
     border: #45A649;
@@ -31,3 +35,18 @@ body{
     background-color: #f3f4f1;
     font-family: 'Montserrat', sans-serif;
 }
+
+#signup, #login{
+    width: 550px;
+    margin: auto;
+}
+
+#login{
+    height: 480px;
+}
+
+#signup{
+    height: 560px;
+}
+
+
