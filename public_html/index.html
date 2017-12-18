@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <!--App CSS-->
         <link href="css/css.css" rel="stylesheet" type="text/css"/>
-        
+
         <!--Angular-->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>   
         <!--Angular Animate-->
@@ -37,46 +37,82 @@
     </head>    
     <body class="wrapper" ng-app="cg-unit3-project">
         <!--Start Navbar-->
-        <nav class="navbar navbar-inverse">
-            <div id="header" class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span> 
-                    </button>
-                    &nbsp;
-                    <a href="index.html">
-                        <img src="img/manuscript-icon.png" alt="Poetry Haven" width="50" height="50">
-                    </a>
+        <div ng-controller="authCtrl">
+            <nav class="navbar navbar-inverse">
+                <div id="header" class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span> 
+                        </button>
+                        &nbsp;
+                        <a href="index.html">
+                            <img src="img/manuscript-icon.png" alt="Poetry Haven" width="50" height="50">
+                        </a>
+                    </div>
+                    <div>
+                        <a class="navbar-brand hidden-xs text-right"  href="index.html">
+                            &nbsp; Poetry Haven
+                        </a> 
+                    </div>  
+                    <div class="collapse navbar-collapse text-right" id="myNavbar">
+                        <ul class="nav navbar-nav">
+                            <li><a href="index.html">Home</a></li>
+                            <li ng-show="authUser"><a href="following.html">Following</a></li>
+                            <li><a href="top-posts.html">Top Posts</a></li>
+                            <li ng-show="authUser"><a href="profile.html">Profile</a></li> 
+                            <li ng-show="!authUser"><a href="login-signup.html">Log in / Sign up</a></li> 
+                            <li ng-show="authUser" ng-click="logout()"><a href="#">Log out</a></li> 
+                        </ul>
+                    </div>
                 </div>
-                <div>
-                    <a class="navbar-brand hidden-xs text-right"  href="index.html">
-                        &nbsp; Poetry Haven
-                    </a> 
-                </div>  
-                <div class="collapse navbar-collapse text-right" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        <li><a href="index.html">Home</a></li>
-                        <li ng-show="authUser"><a href="following.html">Following</a></li>
-                        <li><a href="top-posts.html">Top Posts</a></li>
-                        <li ng-show="authUser"><a href="profile.html">Profile</a></li> 
-                        <li ng-show="!authUser"><a href="login-signup.html">Log in / Sign up</a></li> 
-                        <li ng-show="authUser"><a href="#">Log out</a></li> 
-                    </ul>
-                </div>
-            </div>
-        </nav>
+            </nav>
+        </div>
         <!--End Navbar--> 
-        <div class="container-fluid">
+        <div class="container-fluid col-md-12">
             <h2>
                 Home
             </h2>
+            <div class="col-md-12" ng-controller="authCtrl" ng-show="authUser">
+                <p class="col-md-9">
+                    <a href="#" ng-click="showNewPostForm = true">
+                        Add New Post
+                    </a>
+                </p>                
+                <div class="col-md-9" ng-show="showNewPostForm" id="newPostBlock">
+                    <form>
+                        <div class="form-group col-md-4"> 
+                            <br>
+                            <label for="post-title" class="h4">
+                                New Post
+                            </label>
+                            <input type="text" class="form-control" ng-model="post.title" id="post-title" value="" placeholder="post title" required="required">
+                        </div> 
+                        <div class="form-group col-md-9">
+                            <textarea class="form-control" placeholder="post content (600 max characters)" maxlength="600" id="post-content" ng-model="post.content" required="required">                            
+                            </textarea>
+                        </div>
+                        <div class="col-md-9">
+                            <button type="button" class="btn btn-default" ng-click="user.makePost">
+                                Post
+                            </button>  
+                        </div>                            
+                        <br>
+                        <br>
+                        <p class="text-center">
+                            <a href="#" class="col-md-7" ng-click="showNewPostForm = false">
+                                Hide
+                            </a>
+                        </p>                        
+                    </form>
+                </div>                
+            </div>
             <div ng-controller="homeCtrl">
-                
+
             </div>             
         </div>
-        <footer>
+        <footer class="col-md-12">
             <br>
             2017 Chris Gonzalez 
         </footer>

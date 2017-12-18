@@ -36,7 +36,7 @@ body{
     font-family: 'Montserrat', sans-serif;
 }
 
-#signup, #login{
+#signup, #login, #profile-info{
     width: 550px;
     margin: auto;
 }
@@ -46,7 +46,10 @@ body{
 }
 
 #signup{
-    height: 560px;
+/*    height: 560px; use this when first name and last name added to signup form */
+      height: 480px;
 }
 
-
+div#newPostBlock{
+    background-color: #e6e6e6;
+}

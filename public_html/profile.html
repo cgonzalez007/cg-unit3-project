@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <!--App CSS-->
         <link href="css/css.css" rel="stylesheet" type="text/css"/>
-        
+
         <!--Angular-->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>   
         <!--Angular Animate-->
@@ -37,45 +37,97 @@
     </head>    
     <body class="wrapper" ng-app="cg-unit3-project">
         <!--Start Navbar-->
-        <nav class="navbar navbar-inverse">
-            <div id="header" class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span> 
-                    </button>
-                    &nbsp;
-                    <a href="index.html">
-                        <img src="img/manuscript-icon.png" alt="Poetry Haven" width="50" height="50">
-                    </a>
+        <div ng-controller="authCtrl">
+            <nav class="navbar navbar-inverse">
+                <div id="header" class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span> 
+                        </button>
+                        &nbsp;
+                        <a href="index.html">
+                            <img src="img/manuscript-icon.png" alt="Poetry Haven" width="50" height="50">
+                        </a>
+                    </div>
+                    <div>
+                        <a class="navbar-brand hidden-xs text-right"  href="index.html">
+                            &nbsp; Poetry Haven
+                        </a> 
+                    </div>  
+                    <div class="collapse navbar-collapse text-right" id="myNavbar">
+                        <ul class="nav navbar-nav">
+                            <li><a href="index.html">Home</a></li>
+                            <li ng-show="authUser"><a href="following.html">Following</a></li>
+                            <li><a href="top-posts.html">Top Posts</a></li>
+                            <li ng-show="authUser"><a href="profile.html">Profile</a></li> 
+                            <li ng-show="!authUser"><a href="login-signup.html">Log in / Sign up</a></li> 
+                            <li ng-show="authUser" ng-click="logout()"><a href="#">Log out</a></li> 
+                        </ul>
+                    </div>
                 </div>
-                <div>
-                    <a class="navbar-brand hidden-xs text-right"  href="index.html">
-                        &nbsp; Poetry Haven
-                    </a> 
-                </div>  
-                <div class="collapse navbar-collapse text-right" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        <li><a href="index.html">Home</a></li>
-                        <li ng-show="authUser"><a href="following.html">Following</a></li>
-                        <li><a href="top-posts.html">Top Posts</a></li>
-                        <li ng-show="authUser"><a href="profile.html">Profile</a></li> 
-                        <li ng-show="!authUser"><a href="login-signup.html">Log in / Sign up</a></li> 
-                        <li ng-show="authUser"><a href="#">Log out</a></li> 
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!--End Navbar--> 
-        <div class="container-fluid">
+            </nav>
+        </div>
+        <!--End Navbar-->
+        <div class="container-fluid" ng-controller="authCtrl">
             <h2>
                 Profile
             </h2>
             <div ng-show="authUser">
-                
+                <p>
+                    Logged in as: <b> {{authUser.email}} </b>
+                    &nbsp;
+                    <button class="btn btn-default" ng-click="logout()">
+                        Log out
+                    </button>
+                </p>
+                <p>
+                    Welcome: <b> <span ng-if="user.firstName == null && user.lastName == null">Anonymous User</span>  {{user.firstName}} {{user.lastName}}</b>
+                </p>
+                <p>
+                    <a href="#" ng-click="profileInfo = true">
+                        Change Profile Info
+                    </a>
+                </p>
+                <div id="profile-info" ng-show="profileInfo" ng-init="profileInfo = false">
+                    <h3>
+                        Profile Info
+                    </h3>                    
+                    <form id="signup-form" name="signupForm">
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label for="first-name" class="h4">
+                                First Name
+                            </label>
+                            <input type="text" class="form-control" ng-model="user.firstName" value="" placeholder="first name" required="required">
+                        </div>
+                        <div class="form-group col-sm-12 col-md-6">
+                            <label for="last-name" class="h4">
+                                Last Name
+                            </label>
+                            <input type="text" class="form-control" ng-model="user.lastName" value="" placeholder="last name" required="required">
+                        </div>
+                        <div class="form-group col-md-7"> 
+                            <label for="signup-password" class="h4">
+                                Password
+                            </label>
+                            <input type="password" class="form-control" ng-model="user.password" value="" placeholder="password" required="required">
+                        </div> 
+                        <div class="col-md-7">
+                            <button type="button" ng-click="update()" class="btn btn-default" id="update-btn">
+                                &nbsp;Update&nbsp;
+                            </button> 
+                        </div>    
+                        <p class="text-center col-md-12" >
+                            <br>
+                            <a href="#" ng-click="hide()">
+                                Hide
+                            </a>
+                        </p>
+                    </form>
+                </div>                
             </div>
-            <div ng-controller="profileCtrl" ng-show="!authUser">
+            <div ng-controller="authCtrl" ng-show="!authUser">
                 It looks like you landed on this page on accident or you have
                 been logged out due to lack of activity.                 
                 <br>
