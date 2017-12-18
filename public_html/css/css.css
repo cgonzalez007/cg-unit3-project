@@ -51,5 +51,14 @@ body{
 }
 
 div#newPostBlock{
-    background-color: #e6e6e6;
+    background-color: #e6e6e6;   
+}
+
+.post{
+    padding: 5px;
+    background-color: #d6e5cc;
+}
+
+li{
+    list-style: none;    
 }

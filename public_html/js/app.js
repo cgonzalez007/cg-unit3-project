@@ -4,12 +4,61 @@ var app = angular.module("cg-unit3-project", ["firebase", "ngAnimate", "ui.boots
  */
 
 /**
- * Home Controller
+ * Home Controller 
  */
-app.controller("homeCtrl", function ($scope, $firebaseObject, $window) {
-    app.initFirebase();
+app.controller("homeCtrl", function ($scope, $firebaseArray) {
+    app.initFirebase();      
+    
+    $scope.posts = $firebaseArray(app.firebaseRef.child("posts"));
     
 });
+
+app.controller("postCtrl", function($scope, $firebaseObject, $firebaseAuth, $firebaseArray){
+
+    //initialize firebase
+    app.initFirebase();
+    
+    //create auth obj
+    $scope.authObj = $firebaseAuth();
+    
+    // store logeed in user
+    $scope.authUser = null;
+//    $scope.user = null;
+    $scope.posts = [];
+       
+    // called on login and logout and page load
+    $scope.authObj.$onAuthStateChanged(function(firebaseUser){
+        if(firebaseUser){
+            $scope.authUser = firebaseUser;
+//            $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
+            $scope.posts = $firebaseArray(app.firebaseRef.child('posts'));
+        }else{
+            $scope.authUser = null;
+//            $scope.user = null;
+            $scope.posts = [];
+        }
+    });    
+    
+    $scope.makePost = function(){
+        var title = $scope.post.title;
+        var content = $scope.post.content;               
+        var uid = $scope.authUser.uid;
+        
+        // create object of data to update
+        var data = {
+            title: title, 
+            content: content,
+            uid: uid,
+            date: Date.now() //fix later
+        };
+
+        $scope.posts.$add(data);
+        // clearing form
+        $scope.post.title = "";
+        $scope.post.content = "";
+    };
+});
+
 /**
  * Top Posts Controller
  */
@@ -141,11 +190,7 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
         var landingUrl = "http://" + host + "/cg-unit3-project/index.html";
 
         $window.location.href = landingUrl; //Redirect to given URLs.
-    };
-    
-    $scope.makePost = function(){
-        
-    };
+    };        
 
 }); //end controller
 
