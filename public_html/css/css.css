@@ -62,3 +62,7 @@ div#newPostBlock{
 li{
     list-style: none;    
 }
+
+.like{
+    color: #C1DBE3 !important;
+}

@@ -6,10 +6,35 @@ var app = angular.module("cg-unit3-project", ["firebase", "ngAnimate", "ui.boots
 /**
  * Home Controller 
  */
-app.controller("homeCtrl", function ($scope, $firebaseArray) {
+app.controller("homeCtrl", function ($scope, $firebaseArray, $firebaseAuth, $firebaseObject) {
     app.initFirebase();      
     
     $scope.posts = $firebaseArray(app.firebaseRef.child("posts"));
+    
+    //create auth obj
+    $scope.authObj = $firebaseAuth();
+    
+    // store logeed in user
+    $scope.authUser = null;
+    $scope.user = null;
+//    $scope.posts = [];
+       
+    // called on login and logout and page load
+    $scope.authObj.$onAuthStateChanged(function(firebaseUser){
+        if(firebaseUser){
+            $scope.authUser = firebaseUser;
+            $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
+//            $scope.posts = $firebaseArray(app.firebaseRef.child('posts'));
+        }else{
+            $scope.authUser = null;
+            $scope.user = null;
+//            $scope.posts = [];
+        }
+    }); 
+    
+    $scope.like = function () {
+        
+    };
     
 });
 
@@ -23,18 +48,18 @@ app.controller("postCtrl", function($scope, $firebaseObject, $firebaseAuth, $fir
     
     // store logeed in user
     $scope.authUser = null;
-//    $scope.user = null;
+    $scope.user = null;
     $scope.posts = [];
        
     // called on login and logout and page load
     $scope.authObj.$onAuthStateChanged(function(firebaseUser){
         if(firebaseUser){
             $scope.authUser = firebaseUser;
-//            $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
+            $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
             $scope.posts = $firebaseArray(app.firebaseRef.child('posts'));
         }else{
             $scope.authUser = null;
-//            $scope.user = null;
+            $scope.user = null;
             $scope.posts = [];
         }
     });    
@@ -43,19 +68,42 @@ app.controller("postCtrl", function($scope, $firebaseObject, $firebaseAuth, $fir
         var title = $scope.post.title;
         var content = $scope.post.content;               
         var uid = $scope.authUser.uid;
+        var author = $scope.user.firstName + " " + $scope.user.lastName; 
+        if(author === " "){
+            author = "Anonymous User";
+        }
+        var d = new Date();
         
         // create object of data to update
         var data = {
             title: title, 
+            author: author,
             content: content,
+            likes: [],
             uid: uid,
-            date: Date.now() //fix later
+            exactDate: new Date().getTime(),
+            date: (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear()
         };
 
         $scope.posts.$add(data);
         // clearing form
         $scope.post.title = "";
         $scope.post.content = "";
+        
+        var postBtn = angular.element(document.querySelector('#post-btn'));
+        postBtn.addClass('btn-success');
+        postBtn.html("Posted");
+    };
+    
+    $scope.deletePost = function(){
+        
+    };
+    
+    $scope.hide = function (){
+        $scope.showNewPostForm = false;
+        var postBtn = angular.element(document.querySelector('#post-btn'));
+        postBtn.removeClass('btn-success');
+        postBtn.html("Post");
     };
 });
 
@@ -193,6 +241,10 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
     };        
 
 }); //end controller
+
+app.controller('profileCtrl', function($scope, $firebaseArray, $firebaseAuth, $firebaseObject){
+    
+});
 
 /**
  * Create a connection to the database

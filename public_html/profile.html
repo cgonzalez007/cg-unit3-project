@@ -74,7 +74,7 @@
             <h2>
                 Profile
             </h2>
-            <div ng-show="authUser">
+            <div ng-show="authUser" id="profile">
                 <p>
                     Logged in as: <b> {{authUser.email}} </b>
                     &nbsp;
@@ -84,6 +84,15 @@
                 </p>
                 <p>
                     Welcome: <b> <span ng-if="user.firstName == null && user.lastName == null">Anonymous User</span>  {{user.firstName}} {{user.lastName}}</b>
+                </p>
+                <p>
+                    Likes: <b> {{user.numberLikes}} </b>               
+                </p>
+                <p>
+                    Likes: <b> {{user.followers}} </b>               
+                </p>
+                <p>
+                    Status <b> {{user.status}} </b>               
                 </p>
                 <p>
                     <a href="#" ng-click="profileInfo = true">
@@ -126,6 +135,25 @@
                         </p>
                     </form>
                 </div>                
+            </div>
+            <div id="user-posts" ng-controller="profileCtrl" ng-show="authUser">
+                <ul>
+                    <!--ordering posts by descending order (newest first)-->
+                    <li ng-repeat="post in posts| orderBy: '-date'">
+                        <div class="post" style="padding: 15px;">
+                            <h3>
+                                {{post.title}}                                                           
+                            </h3>
+                            <h5>
+                                By: {{post.author}}
+                            </h5>
+                            <p>
+                                {{post.content}}
+                            </p>
+                        </div>
+                        <br>
+                    </li>
+                </ul>
             </div>
             <div ng-controller="authCtrl" ng-show="!authUser">
                 It looks like you landed on this page on accident or you have
