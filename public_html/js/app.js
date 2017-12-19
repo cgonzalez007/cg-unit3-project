@@ -7,79 +7,149 @@ var app = angular.module("cg-unit3-project", ["firebase", "ngAnimate", "ui.boots
  * Home Controller 
  */
 app.controller("homeCtrl", function ($scope, $firebaseArray, $firebaseAuth, $firebaseObject) {
-    app.initFirebase();      
-    
+    app.initFirebase();
+
+    //posts
     $scope.posts = $firebaseArray(app.firebaseRef.child("posts"));
-    
+
     //create auth obj
     $scope.authObj = $firebaseAuth();
-    
+
     // store logeed in user
     $scope.authUser = null;
     $scope.user = null;
 //    $scope.posts = [];
-       
+
     // called on login and logout and page load
-    $scope.authObj.$onAuthStateChanged(function(firebaseUser){
-        if(firebaseUser){
+    $scope.authObj.$onAuthStateChanged(function (firebaseUser) {
+        if (firebaseUser) {
             $scope.authUser = firebaseUser;
             $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
 //            $scope.posts = $firebaseArray(app.firebaseRef.child('posts'));
-        }else{
+            $scope.likes = $firebaseObject(app.firebaseRef.child("likes").child($scope.authUser.uid));
+        } else {
             $scope.authUser = null;
             $scope.user = null;
 //            $scope.posts = [];
         }
-    }); 
-    
-    $scope.like = function () {
-        
+    });
+    /**
+     * Like a post
+     * @param {type} postId
+     * @returns {undefined}
+     */
+    $scope.like = function (postId) {
+        // create object of data to update
+        console.log(postId);
+//                
+        var data = {liked: true};
+
+        app.firebaseRef.child('likes').child($scope.authUser.uid).child(postId).update(data);
+
+        var retrievedPost = $scope.posts.$getRecord(postId);
+        //console.log(retrievedPost);
+        var numLikes = parseInt(retrievedPost.numberLikes);
+        //console.log(numLikes);
+        retrievedPost.numberLikes = numLikes + 1;
+
+        $scope.posts.$save(retrievedPost);
+
     };
-    
+
 });
 
-app.controller("postCtrl", function($scope, $firebaseObject, $firebaseAuth, $firebaseArray){
+app.controller("postCtrl", function ($scope, $firebaseObject, $firebaseAuth, $firebaseArray) {
 
     //initialize firebase
     app.initFirebase();
-    
+
+    //posts
+    $scope.posts = $firebaseArray(app.firebaseRef.child('posts'));
+
     //create auth obj
     $scope.authObj = $firebaseAuth();
-    
+
     // store logeed in user
     $scope.authUser = null;
     $scope.user = null;
-    $scope.posts = [];
-       
-    // called on login and logout and page load
-    $scope.authObj.$onAuthStateChanged(function(firebaseUser){
-        if(firebaseUser){
+
+    /**
+     * called on login and logout and page load
+     */
+    $scope.authObj.$onAuthStateChanged(function (firebaseUser) {
+        if (firebaseUser) {
             $scope.authUser = firebaseUser;
             $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
-            $scope.posts = $firebaseArray(app.firebaseRef.child('posts'));
-        }else{
+        } else {
             $scope.authUser = null;
             $scope.user = null;
-            $scope.posts = [];
         }
-    });    
-    
-    $scope.makePost = function(){
+    });
+    /**
+     * used for filtering posts by authorized user
+     * @param {type} post
+     * @returns {Boolean}
+     */
+    $scope.uidFilter = function (post) {
+        return post.uid === $scope.authUser.uid;
+    };
+
+    /**
+     * refresh number of likes on page as well as update in firebase db 
+     * current work-around....
+     * @returns {undefined}
+     */
+    $scope.refresh = function () {
+//        var userPosts = [];
+//        angular.forEach($scope.posts, function(value, key){
+//            if($scope.posts[key].uid === $scope.authUser.uid){
+//                userPosts.push($scope.posts[key]);
+//            }
+//        });
+        var firstName = $scope.user.firstName;
+        var lastName = $scope.user.lastName;
+
+        var numberLikes = 0;
+        angular.forEach($scope.posts, function (value, key) {
+            if ($scope.posts[key].uid === $scope.authUser.uid) {
+                numberLikes += $scope.posts[key].numberLikes;
+            }
+        });
+
+        var data = {firstName: firstName, lastName: lastName, numberLikes: numberLikes};
+
+        app.firebaseRef.child('users').child($scope.authUser.uid).update(data);
+
+        console.log("refreshed!");
+    };
+
+    /**
+     * Method for writing posts
+     * @returns {undefined}
+     */
+    $scope.makePost = function () {
         var title = $scope.post.title;
-        var content = $scope.post.content;               
+        var content = $scope.post.content;
+        var email = $scope.authUser.email;
         var uid = $scope.authUser.uid;
-        var author = $scope.user.firstName + " " + $scope.user.lastName; 
-        if(author === " "){
+        var firstName = $scope.user.firstName === undefined ? "" : $scope.user.firstName;
+        var lastName = $scope.user.lastName === undefined ? "" : $scope.user.lastName;
+
+        var author = firstName + " " + lastName;
+
+        if (author === " ") {
             author = "Anonymous User";
         }
+
         var d = new Date();
-        
+
         // create object of data to update
         var data = {
-            title: title, 
+            title: title,
             author: author,
             content: content,
-            likes: [],
+            email: email,
+            numberLikes: 0,
             uid: uid,
             exactDate: new Date().getTime(),
             date: (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear()
@@ -89,17 +159,34 @@ app.controller("postCtrl", function($scope, $firebaseObject, $firebaseAuth, $fir
         // clearing form
         $scope.post.title = "";
         $scope.post.content = "";
-        
+
         var postBtn = angular.element(document.querySelector('#post-btn'));
         postBtn.addClass('btn-success');
         postBtn.html("Posted");
+
+        // create record in firebase db if not created already (mainly for likes)
+        if ($scope.user.numberLikes === null || $scope.user.numberLikes === undefined) {
+            var data = {firstName: firstName, lastName: lastName, numberLikes: 0};
+
+            app.firebaseRef.child('users').child($scope.authUser.uid).update(data);
+        } else {
+            $scope.refresh();
+        }
+
     };
-    
-    $scope.deletePost = function(){
-        
+    /**
+     * delete post by record
+     * @param {type} uid
+     * @returns {undefined}
+     */
+    $scope.delete = function (post) {
+        $scope.posts.$remove(post);
     };
-    
-    $scope.hide = function (){
+    /**
+     * hide post form on homepage
+     * @returns {undefined}
+     */
+    $scope.hide = function () {
         $scope.showNewPostForm = false;
         var postBtn = angular.element(document.querySelector('#post-btn'));
         postBtn.removeClass('btn-success');
@@ -117,7 +204,7 @@ app.controller("topPostsCtrl", function ($scope, $firebaseAuth, $firebaseObject)
 /**
  * Authorize Controller
  */
-app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $window) {
+app.controller("authCtrl", function ($scope, $firebaseArray, $firebaseAuth, $firebaseObject, $window) {
     //initialize firebase
     app.initFirebase();
 
@@ -134,13 +221,13 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
     $scope.authUser = null;
     $scope.user = null;
 
-    // called on login and logout and page load
+    /**
+     * called on login and logout and page load
+     */
     $scope.authObj.$onAuthStateChanged(function (firebaseUser) {
         if (firebaseUser) {
             $scope.authUser = firebaseUser;
             $scope.user = $firebaseObject(app.firebaseRef.child('users').child($scope.authUser.uid));
-            $scope.authFlag = true;
-
         } else {
             $scope.authUser = null;
             $scope.user = null;
@@ -149,6 +236,13 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
 //        console.log($scope.user);
     });
 
+    // posts
+    $scope.posts = $firebaseArray(app.firebaseRef.child("posts"));
+
+    /**
+     * register new user (currently unable to save first name and last name right away)
+     * @returns {undefined}
+     */
     $scope.register = function () {
         // get values from form
         var email = $scope.signupEmail;
@@ -168,7 +262,7 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
         $scope.authObj.$createUserWithEmailAndPassword(email, password)
                 .then(function (firebaseUser) {
                     console.log("User " + firebaseUser.uid + " created successfully!");
-                    // create object of data in db                                       
+                    // create object of data in db                                     
 //                    var data = {firstName: $scope.firstName, lastName: $scope.lastName};
 //                    app.firebaseRef.child('users').child(firebaseUser.uid).update(data);
                     //        /*Go to home page;*/
@@ -180,7 +274,10 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
             console.error("Error: ", error);
         });
     };
-
+    /**
+     * log in registered user
+     * @returns {undefined}
+     */
     $scope.login = function () {
         // get values from form
         // get values from form
@@ -202,34 +299,73 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
         });
 
     };
-    /*Hide profile info on profile page*/
+    /**
+     * Hide profile info on profile page
+     * @returns {undefined}
+     */
     $scope.hide = function () {
         $scope.profileInfo = false;
         var successBtn = angular.element(document.querySelector('#update-btn'));
         successBtn.removeClass('btn-success');
         successBtn.html("&nbsp;Update&nbsp;");
     };
-
+    /**
+     * update user info in firebase db
+     * @returns {undefined}
+     */
     $scope.update = function () {
         // get values from the form
         var firstName = $scope.user.firstName;
         var lastName = $scope.user.lastName;
+        var newPassword = $scope.user.password;
         // validate
 
-        // create object of data to update
-        var data = {firstName: firstName, lastName: lastName};
+        var successBtn = angular.element(document.querySelector('#update-btn'));
 
-        app.firebaseRef.child('users').child($scope.authUser.uid).update(data);
+        try {
+            // create object of data to update
+            var data = {firstName: firstName, lastName: lastName, numberLikes: 0};
+
+            app.firebaseRef.child('users').child($scope.authUser.uid).update(data);
+
+            /*Show user update has been completed successfully...*/
+            successBtn.addClass('btn-success');
+            successBtn.html("Updated");
+
+        } catch (error) {
+            console.log(error);
+            // show there was an error
+            successBtn.removeClass('btn-success').addClass('btn-danger');
+            successBtn.html("Not Updated");
+        }
+
+        if ($scope.user.password !== undefined && $scope.user.password !== null
+                && $scope.user.password !== "") {
+            $scope.authObj.$updatePassword(newPassword).then(function () {
+                console.log("Password changed successfully!");
+                /*Show user update has been completed successfully...*/
+                successBtn.addClass('btn-success');
+                successBtn.html("Updated");
+
+                /******TEMPORARY******/
+                window.location.reload();
+
+            }).catch(function (error) {
+                console.error("Error: ", error);
+                // show there was an error
+                successBtn.removeClass('btn-success').addClass('btn-danger');
+                successBtn.html("Not Updated");
+            });
+        }
+
         // same as
 //        app.firebaseRef.child('users/' + $scope.authUser.uid).update(data);
         console.log("...updated...");
-
-        /*Show user update has been completed successfully...*/
-        var successBtn = angular.element(document.querySelector('#update-btn'));
-        successBtn.addClass('btn-success');
-        successBtn.html("Updated");
     };
-
+    /**
+     * logout as user
+     * @returns {undefined}
+     */
     $scope.logout = function () {
         $scope.authObj.$signOut();
 
@@ -238,14 +374,37 @@ app.controller("authCtrl", function ($scope, $firebaseAuth, $firebaseObject, $wi
         var landingUrl = "http://" + host + "/cg-unit3-project/index.html";
 
         $window.location.href = landingUrl; //Redirect to given URLs.
-    };        
+    };
+    /**
+     * refresh number of likes on page as well as update in firebase db 
+     * current work-around....
+     * @returns {undefined}
+     */
+    $scope.refresh = function () {
+//        var userPosts = [];
+//        angular.forEach($scope.posts, function(value, key){
+//            if($scope.posts[key].uid === $scope.authUser.uid){
+//                userPosts.push($scope.posts[key]);
+//            }
+//        });
+        var firstName = $scope.user.firstName;
+        var lastName = $scope.user.lastName;
+
+        var numberLikes = 0;
+        angular.forEach($scope.posts, function (value, key) {
+            if ($scope.posts[key].uid === $scope.authUser.uid) {
+                numberLikes += $scope.posts[key].numberLikes;
+            }
+        });
+
+        var data = {firstName: firstName, lastName: lastName, numberLikes: numberLikes};
+
+        app.firebaseRef.child('users').child($scope.authUser.uid).update(data);
+
+        console.log("refreshed!");
+    };
 
 }); //end controller
-
-app.controller('profileCtrl', function($scope, $firebaseArray, $firebaseAuth, $firebaseObject){
-    
-});
-
 /**
  * Create a connection to the database
  * @returns {undefined}

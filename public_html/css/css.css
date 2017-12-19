@@ -39,6 +39,11 @@ body{
 #signup, #login, #profile-info{
     width: 550px;
     margin: auto;
+    padding: 8px;
+}
+
+#profile-info, #profile-feedback{
+    height: 330px;
 }
 
 #login{
@@ -50,19 +55,32 @@ body{
       height: 480px;
 }
 
-div#newPostBlock{
+div#newPostBlock, div#profile-info{
     background-color: #e6e6e6;   
 }
 
 .post{
     padding: 5px;
     background-color: #d6e5cc;
+    overflow-wrap: break-word;
 }
 
 li{
     list-style: none;    
 }
 
-.like{
-    color: #C1DBE3 !important;
+ul > li > div > div > a > i.fa {
+    color: #7D7E75 !important;
+}
+
+ul > li > div > div > a > i.fa:hover{
+    color: #424B54 !important;
+}
+
+ul > li > div > div > a > i.fa:active{
+    color: #22262b !important;
+}
+
+a[ng-click]{
+    cursor: pointer;
 }

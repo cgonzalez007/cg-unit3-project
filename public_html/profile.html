@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            Profile
+            Profile - Short Story Haven
         </title>
         <meta charset="UTF-8">        
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +14,8 @@
 
         <!--Boostrap-->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!--Font Awesome v 4.7-->
+        <script src="https://use.fontawesome.com/f39747e93f.js"></script>
         <!--App CSS-->
         <link href="css/css.css" rel="stylesheet" type="text/css"/>
 
@@ -34,7 +36,7 @@
         <!--App JS-->
         <script src="js/app.js" type="text/javascript"></script>
 
-    </head>    
+    </head>       
     <body class="wrapper" ng-app="cg-unit3-project">
         <!--Start Navbar-->
         <div ng-controller="authCtrl">
@@ -53,7 +55,7 @@
                     </div>
                     <div>
                         <a class="navbar-brand hidden-xs text-right"  href="index.html">
-                            &nbsp; Poetry Haven
+                            &nbsp; Short Story Haven
                         </a> 
                     </div>  
                     <div class="collapse navbar-collapse text-right" id="myNavbar">
@@ -70,36 +72,39 @@
             </nav>
         </div>
         <!--End Navbar-->
-        <div class="container-fluid" ng-controller="authCtrl">
-            <h2>
-                Profile
-            </h2>
-            <div ng-show="authUser" id="profile">
-                <p>
-                    Logged in as: <b> {{authUser.email}} </b>
-                    &nbsp;
-                    <button class="btn btn-default" ng-click="logout()">
-                        Log out
-                    </button>
-                </p>
-                <p>
-                    Welcome: <b> <span ng-if="user.firstName == null && user.lastName == null">Anonymous User</span>  {{user.firstName}} {{user.lastName}}</b>
-                </p>
-                <p>
-                    Likes: <b> {{user.numberLikes}} </b>               
-                </p>
-                <p>
-                    Likes: <b> {{user.followers}} </b>               
-                </p>
-                <p>
-                    Status <b> {{user.status}} </b>               
-                </p>
-                <p>
-                    <a href="#" ng-click="profileInfo = true">
-                        Change Profile Info
-                    </a>
-                </p>
-                <div id="profile-info" ng-show="profileInfo" ng-init="profileInfo = false">
+        <div class="container-fluid col-md-12" ng-controller="authCtrl" ng-init="init()">            
+            <div class="col-md-12" ng-show="authUser" id="profile">     
+                <div class="col-md-6 col-sm-7" id="profile-feedback">
+                    <h2>
+                        Profile  
+                    </h2>
+                    <p>
+                        Logged in as: <b> {{authUser.email}} </b>
+                        &nbsp;
+                        <button class="btn btn-default" ng-click="logout()">
+                            Log out
+                        </button>
+                        &nbsp;&nbsp;&nbsp;&nbsp; <a href="#" ng-click="refresh()"><i class="fa fa-refresh fa-2x" aria-hidden="true"></i></a>
+                    </p>
+                    <p>
+                        Welcome: <b> <span ng-if="user.firstName == '' && user.lastName == '' || user.firstName == null && user.lastName == null">Anonymous User</span>  {{user.firstName}} {{user.lastName}}</b>
+                    </p>
+                    <p>
+                        Likes: <b> {{user.numberLikes}} </b>              
+                    </p>
+                    <p>
+                        Followers: <b> {{followers}} </b>               
+                    </p>
+                    <p>
+                        Status: <b> {{status}} </b>               
+                    </p>
+                    <p>
+                        <a href="#" ng-click="profileInfo = true">
+                            Change Profile Info
+                        </a>
+                    </p>
+                </div>
+                <div class="col-md-6 col-sm-7" id="profile-info" ng-show="profileInfo" ng-init="profileInfo = false">
                     <h3>
                         Profile Info
                     </h3>                    
@@ -135,20 +140,25 @@
                         </p>
                     </form>
                 </div>                
-            </div>
-            <div id="user-posts" ng-controller="profileCtrl" ng-show="authUser">
+            </div>           
+            <div class="col-md-12" id="user-posts" ng-controller="postCtrl" ng-show="authUser">
                 <ul>
                     <!--ordering posts by descending order (newest first)-->
-                    <li ng-repeat="post in posts| orderBy: '-date'">
+                    <li ng-repeat="post in posts| filter: uidFilter | orderBy: '-exactDate'">
                         <div class="post" style="padding: 15px;">
                             <h3>
                                 {{post.title}}                                                           
                             </h3>
                             <h5>
-                                By: {{post.author}}
+                                By: {{post.author}} ({{post.email}})
                             </h5>
                             <p>
                                 {{post.content}}
+                            </p>
+                            <p class="text-right">
+                                <a href="#" ng-click="delete(post)">
+                                    Delete
+                                </a>
                             </p>
                         </div>
                         <br>
